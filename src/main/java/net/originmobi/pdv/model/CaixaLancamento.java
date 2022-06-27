@@ -58,7 +58,7 @@ public class CaixaLancamento implements Serializable {
 	@DateTimeFormat(pattern = "dd/MM/yyyy hh:mm:ss")
 	private Timestamp data_cadastro;
 
-	@Deprecated
+	
 	public CaixaLancamento() {
 	}
 

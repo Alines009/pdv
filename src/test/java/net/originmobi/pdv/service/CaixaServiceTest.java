@@ -1,5 +1,6 @@
 package net.originmobi.pdv.service;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import net.originmobi.pdv.enumerado.caixa.CaixaTipo;
 import net.originmobi.pdv.model.Caixa;
+import net.originmobi.pdv.model.CaixaLancamento;
 import net.originmobi.pdv.repository.CaixaRepository;
 import net.originmobi.pdv.utilitarios.CaixaFactory;
 import net.originmobi.pdv.utilitarios.UsuarioFactory;
@@ -40,19 +42,32 @@ public class CaixaServiceTest {
 
     @Mock
     private UsuarioService usuarioServiceMock;
+    
+    @Mock
+    private CaixaLancamentoService CaixaLancamentoServiceMock;
 
     @BeforeEach
     void inicialize() {
         when(caixaRepositoryMock.caixasAbertos()).thenReturn(CaixaFactory.criarListaDeCaixasValidos(CaixaTipo.valueOf("CAIXA")));
         when(usuarioServiceMock.buscaUsuario(ArgumentMatchers.anyString())).thenReturn((UsuarioFactory.criarUsuarioValido()));
-        when(caixaRepositoryMock.save(ArgumentMatchers.any(Caixa.class))).thenReturn(CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA")));
+    	when(CaixaLancamentoServiceMock.lancamento(ArgumentMatchers.any(CaixaLancamento.class))).thenReturn("Lançamento realizado com sucesso");   	
+      //when(caixaRepositoryMock.save(ArgumentMatchers.any(Caixa.class))).thenReturn(CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA")));
     }
 
     @Test
     @WithMockUser("teste")
-    @DisplayName("Testa o cadastro de um caixa válido")
-    public void cadastraCaixaValidoTest() {
+    @DisplayName("Testa o cadastro de um caixa válido com valor de abertura igual a zero")
+    public void cadastraCaixaValidoComAberturaIgualAZeroTest() {
         Caixa caixa = CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA"));
+        Long cod = caixaService.cadastro(caixa);
+        Assertions.assertThat(cod).isNotNull().isEqualTo(caixa.getCodigo());
+    }
+    
+    @Test
+    @WithMockUser("teste")
+    @DisplayName("Testa o cadastro de um caixa válido com valor de abertura maior do que zero")
+    public void cadastraCaixaValidoComAberturaMaiorQueZeroTest() {
+        Caixa caixa = CaixaFactory.criarCaixaValidoComValorAberturaMaiorQueZero(CaixaTipo.valueOf("CAIXA"));
         Long cod = caixaService.cadastro(caixa);
         Assertions.assertThat(cod).isNotNull().isEqualTo(caixa.getCodigo());
     }
@@ -72,6 +87,45 @@ public class CaixaServiceTest {
         Caixa caixa = CaixaFactory.criarCaixaComValorDeAberturaInvalida(CaixaTipo.valueOf("CAIXA"));
         Exception resposta = assertThrows(RuntimeException.class,() -> caixaService.cadastro(caixa));
         assertEquals("Valor informado é inválido", resposta.getMessage());
+    }
+    
+    @Test
+    @DisplayName("Verifica a descrição default ao cadastrar caixa do tipo CAIXA")
+    @SuppressWarnings("unused")
+    public void validarDescricaoDefaultCaixa() {
+    	Caixa caixa = CaixaFactory.criarCaixaSemDescricao(CaixaTipo.valueOf("CAIXA"));
+    	Long cod = caixaService.cadastro(caixa);
+     	assertEquals("Caixa diário", caixa.getDescricao());
+    }
+    
+    @Test
+    @DisplayName("Verifica a descrição default ao cadastrar caixa do tipo COFRE")
+    @SuppressWarnings("unused")
+    public void validarDescricaoDefaultCofre() {
+    	Caixa caixa = CaixaFactory.criarCaixaSemDescricao(CaixaTipo.valueOf("COFRE"));
+    	Long cod = caixaService.cadastro(caixa);
+     	assertEquals("Cofre", caixa.getDescricao());
+    }
+  
+    @Test
+    @DisplayName("Testa o cadastramento de um caixa do tipo BANCO")
+    public void cadastraBancoValidoTest() {
+        Caixa caixa = CaixaFactory.criarBancoValido(CaixaTipo.valueOf("BANCO"));
+        String agencia = caixa.getAgencia();
+        String conta = caixa.getConta();
+        Long cod = caixaService.cadastro(caixa);
+        Assertions.assertThat(cod).isNotNull().isEqualTo(caixa.getCodigo());
+        assertEquals(agencia,caixa.getAgencia());
+        assertNotEquals(conta, caixa.getConta());
+    }
+    
+    @Test
+    @DisplayName("Verifica a descrição default ao cadastrar caixa do tipo BANCO")
+    @SuppressWarnings("unused")
+    public void validarDescricaoDefaultBanco() {
+        Caixa caixa = CaixaFactory.criarBancoValido(CaixaTipo.valueOf("BANCO"));
+        Long cod = caixaService.cadastro(caixa);
+        assertEquals("Banco", caixa.getDescricao());
     }
     
     @Test
@@ -106,7 +160,7 @@ public class CaixaServiceTest {
         Assertions.assertThat(caixas).isNotNull().isNotEmpty().hasSize(1);
         Assertions.assertThat(caixas.get(0).getCodigo()).isEqualTo(expectedCodigo);
     }
-
+    
     @Test
     @DisplayName("Testa a busca de caixas por ID")
     public void buscarCaixaPorIdTest(){
