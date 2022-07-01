@@ -12,7 +12,6 @@ public class GrupoUsuarioFactory {
         grupoUsuario.setCodigo(10L);
         grupoUsuario.setDescricao("Grupo dos Gerentes");
         grupoUsuario.setNome("Gerentes");
-
         return grupoUsuario;
     }
 

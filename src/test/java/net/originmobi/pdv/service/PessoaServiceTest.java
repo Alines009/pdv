@@ -18,11 +18,11 @@ import java.text.ParseException;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class PessoaServiceTest {
 	
-
 	@InjectMocks
     private PessoaService pessoaService;
 
@@ -30,18 +30,16 @@ public class PessoaServiceTest {
 	private PessoaRepository pessoaRepositoryMock;
 	
 	@BeforeEach
-	void setUp () throws ParseException{
+	void inicialize(){
 
-		BDDMockito.when(pessoaRepositoryMock.findAll())
-	                .thenReturn(PessoaFactory.criarListaPessoasValidas());
+		when(pessoaRepositoryMock.findAll()).thenReturn(PessoaFactory.criarListaPessoasValidas());
 		
-		BDDMockito.when(pessoaRepositoryMock.save(ArgumentMatchers.any(Pessoa.class)))
-	                .thenReturn(PessoaFactory.criarPessoaValida());
+		when(pessoaRepositoryMock.save(ArgumentMatchers.any(Pessoa.class))).thenReturn(PessoaFactory.criarPessoaValida());
 	}
 	
     @Test
     @DisplayName("Testa o método lista")
-    public void  lista() throws ParseException{
+    public void lista() throws ParseException{
 
         Long expectedCod = PessoaFactory.criarListaPessoasValidas().get(0).getCodigo();
         List<Pessoa> pessoas = pessoaService.lista();
@@ -73,14 +71,12 @@ public class PessoaServiceTest {
     
     @Test
     @DisplayName("Testa o método cadastrar")
-    public void cadastrar () throws ParseException{
-    	
-        //Apresenta erro pois não há tratamento de exceção com try catch na classe PessoaService
-    	
-    	BDDMockito.when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
+    public void cadastrar() throws ParseException{
+    	    	
+    	when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
-        BDDMockito.when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
+        when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
         Pessoa pessoa = PessoaFactory.criarPessoaValida();
@@ -97,13 +93,12 @@ public class PessoaServiceTest {
 
     @Test
     @DisplayName("Testa o método cadastrar com pessoa já existente")
-    public void cadastrarComPersonExistente() throws ParseException{
-        //Apresenta erro pois não há tratamento de exceção com try catch na classe PessoaService
+    public void cadastrarPessoaExistente() throws ParseException{
 
-        BDDMockito.when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
+        when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
                 .thenReturn(PessoaFactory.criarPessoaValida());
 
-        BDDMockito.when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
+        when(pessoaRepositoryMock.findByCpfcnpjContaining(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
         Pessoa pessoa = PessoaFactory.criarPessoaValida();

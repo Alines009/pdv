@@ -10,15 +10,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
+import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @ExtendWith(SpringExtension.class)
 public class UsuarioServiceTest {
@@ -28,29 +27,28 @@ public class UsuarioServiceTest {
 
     @Mock
     private UsuarioRepository usuarioRepositoryMock;
+    
     @Mock
     private GrupoUsuarioService grupoUsuarioServiceMock;
 
     @BeforeEach
-    void setUp (){
+    void inicialize(){
 
-        BDDMockito.when(usuarioRepositoryMock.findAll())
-                .thenReturn(UsuarioFactory.criarListaUsuariosValidos());
-
-        BDDMockito.when(usuarioRepositoryMock.save(ArgumentMatchers.any(Usuario.class)))
-                .thenReturn(UsuarioFactory.criarUsuarioValido());
+        when(usuarioRepositoryMock.findAll()).thenReturn(UsuarioFactory.criarListaUsuariosValidos());
+        
+        when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong())).thenReturn(UsuarioFactory.criarUsuarioValido());
+        
+        when(usuarioRepositoryMock.save(ArgumentMatchers.any(Usuario.class))).thenReturn(UsuarioFactory.criarUsuarioValido());
+     
     }
-
+    
     @Test
     @DisplayName("Testa cadastrar um usuário")
     public void cadastrar(){
 
-        //Apresenta erro pois não há tratamento de exceção com try catch na classe UsuarioService
-        BDDMockito.when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
-                .thenReturn(null);
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString())).thenReturn(UsuarioFactory.criarUsuarioValido());
 
-        BDDMockito.when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
-                .thenReturn(null);
+        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong())).thenReturn(null);
 
         Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
         String expectedMsg = "Usuário salvo com sucesso";
@@ -60,14 +58,13 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Testa cadastrar um suário já existente")
+    @DisplayName("Testa cadastrar um usuário já existente")
     public void cadastrarUsuarioExistente(){
 
-        //Apresenta erro pois não há tratamento de exceção com try catch na classe UsuarioService
-        BDDMockito.when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
-                .thenReturn(UsuarioFactory.criarUsuarioValido());
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
+               .thenReturn(UsuarioFactory.criarUsuarioValido());
 
-        BDDMockito.when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
+        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
                 .thenReturn(null);
 
         Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
@@ -76,17 +73,16 @@ public class UsuarioServiceTest {
 
         assertEquals(expectedMsg, msg);
     }
-
+    
     @Test
     @DisplayName("Testa cadastrar um usuário já vinculado a uma pessoa")
-    public void casdastrarUsuarioJaVinculado (){
+    public void cadastrarUsuarioJaVinculado(){
 
-        //Apresenta erro pois não há tratamento de exceção com try catch na classe UsuarioService
-        BDDMockito.when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
-        BDDMockito.when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
-                .thenReturn(UsuarioFactory.criarUsuarioValidoComPessoaEGrupo());
+        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
+                .thenReturn(null);
 
         Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
         String expectedMsg = "Pessoa já vinculada a outro usuário";
@@ -126,9 +122,9 @@ public class UsuarioServiceTest {
     @DisplayName("Testa o metodo addGrupo")
     public void addGrupo(){
 
-        BDDMockito.when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
+        when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
                 .thenReturn(UsuarioFactory.criarUsuarioValido());
-        BDDMockito.when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
+        when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
                 .thenReturn(GrupoUsuarioFactory.criarGrupoUsuarioValido());
 
         Long userCod = UsuarioFactory.criarUsuarioValido().getCodigo();
@@ -142,15 +138,14 @@ public class UsuarioServiceTest {
     @Test
     @DisplayName("Testa o metodo addGrupo tentando inserir um usuário em um grupo que ele já está inserido")
     public void addGrupoExistente(){
-        //Está dando erro
-    	//Verificar depois
-        BDDMockito.when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
+        
+        when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
                 .thenReturn(UsuarioFactory.criarUsuarioValidoComPessoaEGrupo());
-        BDDMockito.when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
+        when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
                 .thenReturn(GrupoUsuarioFactory.criarGrupoUsuarioValido());
 
         Long userCod = UsuarioFactory.criarUsuarioValidoComPessoaEGrupo().getCodigo();
-        Long groupCod = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo();
+        Long groupCod = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo().longValue();
         String expectedMsg = "ja existe";
         String msg = usuarioService.addGrupo(userCod, groupCod);
 
@@ -161,13 +156,13 @@ public class UsuarioServiceTest {
     @DisplayName("Testa o metodo removeGrupo")
     public void removeGrupo(){
 
-        BDDMockito.when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
+        when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
                 .thenReturn(UsuarioFactory.criarUsuarioValido());
 
-        BDDMockito.when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
+        when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
                 .thenReturn(GrupoUsuarioFactory.criarGrupoUsuarioValido());
 
-        BDDMockito.when(grupoUsuarioServiceMock.buscaGrupos(ArgumentMatchers.any(Usuario.class)))
+        when(grupoUsuarioServiceMock.buscaGrupos(ArgumentMatchers.any(Usuario.class)))
                 .thenReturn(UsuarioFactory.criarUsuarioValido().getGrupoUsuario());
 
         Long userCod = UsuarioFactory.criarUsuarioValido().getCodigo();
@@ -181,7 +176,7 @@ public class UsuarioServiceTest {
     @Test
     @DisplayName("Testa o metodo buscaUsuario")
     public void buscaUsuario(){
-        BDDMockito.when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
                 .thenReturn(UsuarioFactory.criarUsuarioValido());
 
         Usuario expectedUser = UsuarioFactory.criarUsuarioValido();

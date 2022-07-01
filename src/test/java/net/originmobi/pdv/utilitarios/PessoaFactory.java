@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PessoaFactory {
 
-	public static Pessoa criarPessoaValida() throws ParseException {
+	public static Pessoa criarPessoaValida() {
 		 Pessoa pessoa = new Pessoa();
 		 pessoa.setCodigo(10L);
 		 pessoa.setNome("Ana Clara");
@@ -28,7 +28,12 @@ public class PessoaFactory {
 		 
 		 String data_nascimento = "01/10/1999";
 		 SimpleDateFormat formata = new SimpleDateFormat("dd/MM/yyyy");
-		 Date dataNascimento = new Date(formata.parse(data_nascimento).getTime());
+		 Date dataNascimento = null;
+		try {
+			dataNascimento = new Date(formata.parse(data_nascimento).getTime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		 pessoa.setData_nascimento(dataNascimento);
 		 pessoa.setData_cadastro(Date.valueOf(dataAtual));
 			
@@ -84,10 +89,22 @@ public class PessoaFactory {
 	}
 	  
 	
-    public  static List<Pessoa> criarListaPessoasValidas() throws ParseException{
+    public  static List<Pessoa> criarListaPessoasValidas() {
         List<Pessoa> pessoas = new ArrayList<>();
         pessoas.add(criarPessoaValida());
         return pessoas;
+    }
+    
+
+    public static Pessoa criarPessoaValidaParaInserir() {
+        Pessoa pessoa = criarPessoaValida();
+        pessoa.setCodigo(null);
+        return  pessoa;
+    }
+
+    public static Pessoa criarPessoaInvalidaParaInserir() {
+        Pessoa pessoa = null;
+        return  pessoa;
     }
     
 

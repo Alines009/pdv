@@ -10,6 +10,7 @@ public class UsuarioFactory {
 
     public static Usuario criarUsuarioValido() {
         Usuario usuario = new Usuario();
+        
         usuario.setCodigo(11L);
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -17,7 +18,7 @@ public class UsuarioFactory {
 
         usuario.setUser("gerente");
         usuario.setGrupoUsuario(GrupoUsuarioFactory.criarListaGrupoUsuariosValidos());
-
+    
         return  usuario;
     }
 
