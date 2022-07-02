@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: pdv
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: karin
+Built-By: aline
 Implementation-Vendor-Id: net.originmobi
-Build-Jdk: 1.8.0_202
+Build-Jdk: 1.8.0_261
 Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
  ot-starter-parent/pdv
 Created-By: Maven Integration for Eclipse
