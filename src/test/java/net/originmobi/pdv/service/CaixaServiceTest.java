@@ -29,7 +29,7 @@ import net.originmobi.pdv.utilitarios.UsuarioFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { SecurityContextHolder.class, SecurityContext.class })
-public class CaixaServiceTest {
+class CaixaServiceTest {
 
     @InjectMocks
     private CaixaService caixaService;
@@ -54,7 +54,7 @@ public class CaixaServiceTest {
     @Test
     @WithMockUser("teste")
     @DisplayName("Testa o cadastro de um caixa válido com valor de abertura igual a zero")
-    public void cadastraCaixaValidoComAberturaIgualAZeroTest() {
+    void cadastraCaixaValidoComAberturaIgualAZeroTest() {
         Caixa caixa = CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA"));
         Long cod = caixaService.cadastro(caixa);
         Assertions.assertThat(cod).isNotNull().isEqualTo(caixa.getCodigo());
@@ -63,7 +63,7 @@ public class CaixaServiceTest {
     @Test
     @WithMockUser("teste")
     @DisplayName("Testa o cadastro de um caixa válido com valor de abertura maior do que zero")
-    public void cadastraCaixaValidoComAberturaMaiorQueZeroTest() {
+    void cadastraCaixaValidoComAberturaMaiorQueZeroTest() {
         Caixa caixa = CaixaFactory.criarCaixaValidoComValorAberturaMaiorQueZero(CaixaTipo.valueOf("CAIXA"));
         Long cod = caixaService.cadastro(caixa);
         Assertions.assertThat(cod).isNotNull().isEqualTo(caixa.getCodigo());
@@ -71,7 +71,7 @@ public class CaixaServiceTest {
     
     @Test
     @DisplayName("Verifica exceção de abertura de caixa caso já tenham caixas abertos de dias anteriores")
-    public void verificaExcecaoDeCaixasAbertos() {
+    void verificaExcecaoDeCaixasAbertos() {
     	when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         Caixa caixa = CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA"));
         Exception resposta = assertThrows(RuntimeException.class,() -> caixaService.cadastro(caixa));
@@ -80,7 +80,7 @@ public class CaixaServiceTest {
     
     @Test
     @DisplayName("Verifica exceção ao cadastrar caixa caso o valor de abertura seja negativo")
-    public void verificaValorDeAberturaNegativo() {
+    void verificaValorDeAberturaNegativo() {
         Caixa caixa = CaixaFactory.criarCaixaComValorDeAberturaInvalida(CaixaTipo.valueOf("CAIXA"));
         Exception resposta = assertThrows(RuntimeException.class,() -> caixaService.cadastro(caixa));
         assertEquals("Valor informado é inválido", resposta.getMessage());
@@ -89,7 +89,7 @@ public class CaixaServiceTest {
     @Test
     @DisplayName("Verifica a descrição default ao cadastrar caixa do tipo CAIXA")
     @SuppressWarnings("unused")
-    public void validarDescricaoDefaultCaixa() {
+    void validarDescricaoDefaultCaixa() {
     	Caixa caixa = CaixaFactory.criarCaixaSemDescricao(CaixaTipo.valueOf("CAIXA"));
     	Long cod = caixaService.cadastro(caixa);
      	assertEquals("Caixa diário", caixa.getDescricao());
@@ -98,7 +98,7 @@ public class CaixaServiceTest {
     @Test
     @DisplayName("Verifica a descrição default ao cadastrar caixa do tipo COFRE")
     @SuppressWarnings("unused")
-    public void validarDescricaoDefaultCofre() {
+    void validarDescricaoDefaultCofre() {
     	Caixa caixa = CaixaFactory.criarCaixaSemDescricao(CaixaTipo.valueOf("COFRE"));
     	Long cod = caixaService.cadastro(caixa);
      	assertEquals("Cofre", caixa.getDescricao());
@@ -106,7 +106,7 @@ public class CaixaServiceTest {
   
     @Test
     @DisplayName("Testa o cadastramento de um caixa do tipo BANCO")
-    public void cadastraBancoValidoTest() {
+    void cadastraBancoValidoTest() {
         Caixa caixa = CaixaFactory.criarBancoValido(CaixaTipo.valueOf("BANCO"));
         String agencia = caixa.getAgencia();
         String conta = caixa.getConta();
@@ -119,7 +119,7 @@ public class CaixaServiceTest {
     @Test
     @DisplayName("Verifica a descrição default ao cadastrar caixa do tipo BANCO")
     @SuppressWarnings("unused")
-    public void validarDescricaoDefaultBanco() {
+    void validarDescricaoDefaultBanco() {
         Caixa caixa = CaixaFactory.criarBancoValido(CaixaTipo.valueOf("BANCO"));
         Long cod = caixaService.cadastro(caixa);
         assertEquals("Banco", caixa.getDescricao());
@@ -128,7 +128,7 @@ public class CaixaServiceTest {
     @Test
     @WithMockUser(password = "123")
     @DisplayName("Testa o método de fechar caixa")
-    public void fecharCaixaTest() {
+    void fecharCaixaTest() {
         when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         when(caixaRepositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         String expectedMsg = "Caixa fechado com sucesso";
@@ -139,7 +139,7 @@ public class CaixaServiceTest {
 
     @Test
     @DisplayName("Verifica se um caixa está aberto")
-    public void verificaCaixaAbertoTest(){
+    void verificaCaixaAbertoTest(){
         when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         Caixa cx = CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"));
@@ -150,7 +150,7 @@ public class CaixaServiceTest {
 
     @Test
     @DisplayName("Testa se o método retorna uma lista de caixas abertos")
-    public void verificaCaixasAbertosTest(){
+    void verificaCaixasAbertosTest(){
         when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         Long expectedCodigo = CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA")).getCodigo();
         List<Caixa> caixas = caixaService.caixasAbertos();
@@ -160,7 +160,7 @@ public class CaixaServiceTest {
     
     @Test
     @DisplayName("Testa a busca de caixas por ID")
-    public void buscarCaixaPorIdTest(){
+    void buscarCaixaPorIdTest(){
         when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         when(caixaRepositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA"))));
         Caixa cx = CaixaFactory.criarCaixaValido(CaixaTipo.valueOf("CAIXA"));
@@ -171,7 +171,7 @@ public class CaixaServiceTest {
 
     @Test
     @DisplayName("Testa se o método retorna uma lista de caixas abertos do tipo CAIXA")
-    public void listaCaixasAbertosTipoCAIXA() {
+    void listaCaixasAbertosTipoCAIXA() {
         when(caixaRepositoryMock.caixaAberto()).thenReturn(Optional.of(CaixaFactory.criarCaixaValidoASerFechado(CaixaTipo.valueOf("CAIXA"))));
         when(caixaRepositoryMock.buscaCaixaTipo(ArgumentMatchers.any(CaixaTipo.class))).thenReturn(CaixaFactory.criarListaDeCaixasValidos(CaixaTipo.valueOf("CAIXA")));
         List<Caixa> cxs = CaixaFactory.criarListaDeCaixasValidos(CaixaTipo.valueOf("CAIXA"));

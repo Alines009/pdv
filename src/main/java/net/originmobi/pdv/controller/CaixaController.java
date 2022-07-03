@@ -71,7 +71,7 @@ public class CaixaController {
 	public @ResponseBody String cadastro(@RequestParam Map<String, String> request, UriComponentsBuilder b) {
 		String descricao = request.get("descricao");
 		String tipo = request.get("tipo");
-		String vlAbertura = request.get("valor_abertura");
+		String vlAbertura = request.get("valorAbertura");
 		String agencia = request.get("agencia");
 		String conta = request.get("conta");
 		
@@ -87,7 +87,7 @@ public class CaixaController {
 		Caixa caixa = new Caixa();
 		caixa.setDescricao(descricao);
 		caixa.setTipo(caixaTipo);
-		caixa.setValor_abertura(valorAbertura);
+		caixa.setValorAbertura(valorAbertura);
 		caixa.setAgencia(agencia);
 		caixa.setConta(conta);
 		
@@ -114,7 +114,7 @@ public class CaixaController {
 	public @ResponseBody String fazSuprimento(@RequestParam Map<String, String> request) {
 		Double valor = Double.valueOf(request.get("valor").replace(",", "."));
 		String observacao = request.get("obs");
-		Long codCaixa = Long.decode(request.get("caixa"));
+		Long codCaixa = Long.decode(request.get(CAIXA));
 
 		String retorno = "";
 
