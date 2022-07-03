@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,7 +76,7 @@ public class PagarController {
 		return mv;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public @ResponseBody String cadastroDespesa(@RequestParam Map<String, String> request) {
 		Long codFornecedor = Long.decode(request.get("fornecedor"));
 		Long tipo = Long.decode(request.get("tipo"));
@@ -86,10 +87,10 @@ public class PagarController {
 		LocalDate vencimento = LocalDate.parse(request.get("vencimento"), format);
 		Optional<PagarTipo> pagarTipo = pagartipos.busca(tipo);
 
-		return pagarServ.cadastrar(codFornecedor, valor, obs, vencimento, pagarTipo.get());
+		return pagarServ.cadastrar(codFornecedor, valor, obs, vencimento, pagarTipo.orElse(null));
 	}
 
-	@RequestMapping(value = "/quitar", method = RequestMethod.POST)
+	@PostMapping("/quitar")
 	public @ResponseBody String quitar(@RequestParam Map<String, String> request) {
 		Long codparcela = Long.decode(request.get("parcela"));
 		Long codCaixa = Long.decode(request.get("caixa"));

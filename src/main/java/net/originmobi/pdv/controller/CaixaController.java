@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,6 +41,8 @@ public class CaixaController {
 	private static final String CAIXA_LIST = "caixa/list";
 
 	private static final String CAIXA_FORM = "caixa/form";
+	
+	public static final String CAIXA = "caixa";
 
 	@Autowired
 	private CaixaService caixas;
@@ -64,7 +67,7 @@ public class CaixaController {
 		return mv;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public @ResponseBody String cadastro(@RequestParam Map<String, String> request, UriComponentsBuilder b) {
 		String descricao = request.get("descricao");
 		String tipo = request.get("tipo");
@@ -72,13 +75,19 @@ public class CaixaController {
 		String agencia = request.get("agencia");
 		String conta = request.get("conta");
 		
-		Double valor_abertura = vlAbertura.isEmpty() ? 0.0 : Double.valueOf(vlAbertura.replaceAll("\\.", "").replace(",", "."));
-		CaixaTipo caixa_tipo = CaixaTipo.valueOf(tipo);
+        double valorAbertura = 0.0;
+        if (!vlAbertura.isEmpty()) {
+            String valorTratado = Pattern.compile("\\.").matcher(vlAbertura)
+                    .replaceAll("")
+                    .replace(',', '.');
+            valorAbertura = Double.parseDouble(valorTratado);
+        }
+		CaixaTipo caixaTipo = CaixaTipo.valueOf(tipo);
 		
 		Caixa caixa = new Caixa();
 		caixa.setDescricao(descricao);
-		caixa.setTipo(caixa_tipo);
-		caixa.setValor_abertura(valor_abertura);
+		caixa.setTipo(caixaTipo);
+		caixa.setValor_abertura(valorAbertura);
 		caixa.setAgencia(agencia);
 		caixa.setConta(conta);
 		
@@ -92,17 +101,16 @@ public class CaixaController {
 		return headers.toString() + codCaixa;
 	}
 
-	@SuppressWarnings("deprecation")
 	@GetMapping("/gerenciar/{codigo}")
 	public ModelAndView gerenciar(@PathVariable("codigo") Caixa caixa) {
 		ModelAndView mv = new ModelAndView(CAIXA_GERENCIAR);
-		mv.addObject("caixa", caixa);
+		mv.addObject(CAIXA, caixa);
 		mv.addObject("lancamento", new CaixaLancamento());
 		mv.addObject("lancamentos", lancamentos.lancamentosDoCaixa(caixa));
 		return mv;
 	}
 
-	@RequestMapping(value = "/lancamento/suprimento", method = RequestMethod.POST)
+	@PostMapping("/lancamento/suprimento")
 	public @ResponseBody String fazSuprimento(@RequestParam Map<String, String> request) {
 		Double valor = Double.valueOf(request.get("valor").replace(",", "."));
 		String observacao = request.get("obs");
@@ -126,7 +134,7 @@ public class CaixaController {
 		return retorno;
 	}
 
-	@RequestMapping(value = "/lancamento/sangria", method = RequestMethod.POST)
+	@PostMapping("/lancamento/sangria")
 	public @ResponseBody String fazSangria(@RequestParam Map<String, String> request) {
 		Double valor = Double.valueOf(request.get("valor").replace(",", "."));
 		String observacao = request.get("obs");
@@ -149,7 +157,7 @@ public class CaixaController {
 		return retorno;
 	}
 
-	@RequestMapping(value = "/fechar", method = RequestMethod.POST)
+	@PostMapping("/fechar")
 	public @ResponseBody String fecha(@RequestParam Map<String, String> request) {
 		Long caixa = Long.decode(request.get("caixa"));
 		String senha = request.get("senha");

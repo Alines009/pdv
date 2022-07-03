@@ -15,8 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -100,7 +100,7 @@ public class ProdutoController {
 		return mv;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public String cadastrar(@RequestParam Map<String, String> request, RedirectAttributes attributes) {
 
 		String prod = request.get("codigo");

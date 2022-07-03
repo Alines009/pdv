@@ -60,7 +60,7 @@ public class VendaController {
 	private PagamentoTipoService pagamentoTipos;
 
 	@Autowired
-	private TituloService titulos;
+	private TituloService tituloService;
 
 	@GetMapping("/form")
 	public ModelAndView form() {
@@ -83,7 +83,7 @@ public class VendaController {
 		model.addAttribute("hasNext", vendasPaginadas.hasNext());
 		model.addAttribute("hasPrevious", vendasPaginadas.hasPrevious());
 		
-		if (vendasPaginadas.getContent().size() > 0)
+		if (!vendasPaginadas.getContent().isEmpty())
 			model.addAttribute("statuVenda", vendasPaginadas.getContent().get(0).getSituacao());
 
 		return mv;
@@ -103,7 +103,7 @@ public class VendaController {
 			e.getStackTrace();
 		}
 
-		return "redirect:/venda/" + codigo.toString();
+		return "redirect:/venda/" + (codigo != null ? codigo.toString() : "");
 
 	}
 
@@ -115,7 +115,7 @@ public class VendaController {
 		return mv;
 	}
 
-	@RequestMapping(value = "/addproduto", method = RequestMethod.POST)
+	@PostMapping("/addproduto")
 	public @ResponseBody String addProdutoVenda(@RequestParam Map<String, String> request) {
 		Long codVen = Long.decode(request.get("codigoVen"));
 		Long codPro = Long.decode(request.get("codigoPro"));
@@ -132,7 +132,7 @@ public class VendaController {
 		return mensagem;
 	}
 
-	@RequestMapping(value = "/removeproduto", method = RequestMethod.POST)
+	@PostMapping("/removeproduto")
 	public @ResponseBody String removeProdutoVenda(@RequestParam Map<String, String> request) {
 		Long posicaoProd = Long.decode(request.get("posicaoPro"));
 		Long venda = Long.decode(request.get("codigoVen"));
@@ -147,27 +147,27 @@ public class VendaController {
 		return mensagem;
 	}
 
-	@RequestMapping(value = "/fechar", method = RequestMethod.POST)
+	@PostMapping("/fechar")
 	public @ResponseBody String fechar(@RequestParam Map<String, String> request) {
 		Long venda = Long.decode(request.get("venda"));
 		Long pagamentotipo = Long.decode(request.get("pagamentotipo"));
-		String valor_produtos = request.get("valor_produtos");
-		String valor_desconto = request.get("valor_desconto");
-		String valor_acrescimo = request.get("valor_acrescimo");
+		String valorProdutos = request.get("valor_produtos");
+		String valorDesconto = request.get("valor_desconto");
+		String valorAcrescimo = request.get("valor_acrescimo");
 
 		String[] vlParcelas = request.get("valores").split(",");
 		String[] titulos = request.get("titulos").split(",");
 
-		Double vlprodutos = valor_produtos.isEmpty() ? 0.0 : Double.valueOf(valor_produtos.replace(",", "."));
-		Double vldesconto = valor_desconto.isEmpty() ? 0.0 : Double.valueOf(valor_desconto.replace(",", "."));
-		Double vlacrescimo = valor_acrescimo.isEmpty() ? 0.0 : Double.valueOf(valor_acrescimo.replace(",", "."));
+		Double vlprodutos = valorProdutos.isEmpty() ? 0.0 : Double.valueOf(valorProdutos.replace(",", "."));
+		Double vldesconto = valorDesconto.isEmpty() ? 0.0 : Double.valueOf(valorDesconto.replace(",", "."));
+		Double vlacrescimo = valorAcrescimo.isEmpty() ? 0.0 : Double.valueOf(valorAcrescimo.replace(",", "."));
 
 		return vendas.fechaVenda(venda, pagamentotipo, vlprodutos, vldesconto, vlacrescimo, vlParcelas, titulos);
 	}
 
-	@RequestMapping(value = "/titulos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/titulos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody List<Titulo> titulos() {
-		return titulos.lista();
+		return tituloService.lista();
 	}
 
 	@ModelAttribute("clientes")

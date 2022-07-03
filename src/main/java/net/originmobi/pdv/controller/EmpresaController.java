@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -46,11 +46,11 @@ public class EmpresaController {
 		return mv;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public String cadastra(@RequestParam Map<String, String> request, RedirectAttributes attributes) {
 		String strCodigo = request.get("codigo");
 		String nome = request.get("nome");
-		String nome_fantasia = request.get("nome_fantasia");
+		String nomeFantasia = request.get("nome_fantasia");
 		String cnpj = request.get("cnpj");
 		String ie = request.get("ie");
 		String vlSerie = request.get("parametro.serie_nfe");
@@ -72,7 +72,7 @@ public class EmpresaController {
 		Long codendereco = strCodEnde.isEmpty() ? null : Long.decode(strCodEnde);
 		Double aliqCalcCredito = aliqCred.isEmpty() ? 0.0 : Double.valueOf(aliqCred); 
 
-		String mensagem = empresas.merger(codigo, nome, nome_fantasia, cnpj, ie, serie, ambiente, codRegime, codendereco,
+		String mensagem = empresas.merger(codigo, nome, nomeFantasia, cnpj, ie, serie, ambiente, codRegime, codendereco,
 				codcidade, rua, bairro, numero, cep, referencia, aliqCalcCredito);
 		attributes.addFlashAttribute("mensagem", mensagem);
 

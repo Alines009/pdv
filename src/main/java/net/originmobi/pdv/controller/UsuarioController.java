@@ -7,14 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,6 +26,9 @@ public class UsuarioController {
 
 	private static final String USUARIO_FORM = "usuario/form";
 
+	public static final String CODIGO_GRU = "codigoGru";
+	public static final String CODIGO_USU = "codigoUsu";
+	
 	@Autowired
 	private UsuarioService usuarios;
 
@@ -81,22 +77,22 @@ public class UsuarioController {
 		return mv;
 	}
 
-	@RequestMapping(value = "/addgrupo", method = RequestMethod.POST)
+	@PutMapping("/addgrupo")
 	public @ResponseBody String addGrupo(@RequestParam Map<String, String> request) {
 
-		if (request.get("codigoGru").length() == 0)
+		if (request.get(CODIGO_GRU).length() == 0)
 			return "grupo vazio";
 
-		Long codUsu = Long.decode(request.get("codigoUsu"));
-		Long codGru = Long.decode(request.get("codigoGru"));
+		Long codUsu = Long.decode(request.get(CODIGO_USU));
+		Long codGru = Long.decode(request.get(CODIGO_GRU));
 
 		return usuarios.addGrupo(codUsu, codGru);
 	}
 
-	@RequestMapping(value = "/removegrupo", method = RequestMethod.PUT)
+	@PutMapping("/removegrupo")
 	public @ResponseBody String removeGrupo(@RequestParam Map<String, String> request) {
-		Long codUsu = Long.decode(request.get("codigoUsu"));
-		Long codGru = Long.decode(request.get("codigoGru"));
+		Long codUsu = Long.decode(request.get(CODIGO_USU));
+		Long codGru = Long.decode(request.get(CODIGO_GRU));
 
 		return usuarios.removeGrupo(codUsu, codGru);
 	}

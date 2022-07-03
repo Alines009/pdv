@@ -9,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,6 +35,9 @@ public class AjusteController {
 
 	private static final String AJUSTE_FORM = "ajuste/form";
 	private static final String AJUSTE_LIST = "ajuste/list";
+	
+	public static final String COD_AJUSTE = "codajuste";
+	public static final String COD_PROD = "codprod";
 
 	@Autowired
 	private AjusteService ajustes;
@@ -59,7 +64,7 @@ public class AjusteController {
 		return mv;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public @ResponseBody String cadastra(UriComponentsBuilder builder) {
 		UriComponents uri = builder.path("/ajustes/").build();
 
@@ -79,24 +84,24 @@ public class AjusteController {
 		return mv;
 	}
 	
-	@RequestMapping(value = "/addproduto", method = RequestMethod.POST)
+	@PostMapping("/addproduto")
 	public @ResponseBody String addProduto(@RequestParam Map<String, String> request) {
-		Long codajuste = Long.decode(request.get("codajuste"));
-		Long codprod = Long.decode(request.get("codprod"));
-		int qtd_alterar = Integer.parseInt(request.get("qtd_alterar"));
+		Long codajuste = Long.decode(request.get(COD_AJUSTE));
+		Long codprod = Long.decode(request.get(COD_PROD));
+		int qtdAlterar = Integer.parseInt(request.get("qtd_alterar"));
 		
-		return ajusteProdutos.addProduto(codajuste, codprod, qtd_alterar);
+		return ajusteProdutos.addProduto(codajuste, codprod, qtdAlterar);
 	}
 	
-	@RequestMapping(value = "/processar", method = RequestMethod.POST)
+	@PostMapping("/processar")
 	public @ResponseBody String processar(@RequestParam Map<String, String> request) {
-		Long codajuste = Long.decode(request.get("codajuste"));
+		Long codajuste = Long.decode(request.get(COD_AJUSTE));
 		String obs = request.get("obs");
 		
 		return ajustes.processar(codajuste, obs);
 	}
 	
-	@RequestMapping(value = "/cancelar/{codigo}", method = RequestMethod.DELETE)
+	@DeleteMapping("/cancelar/{codigo}")
 	public @ResponseBody String remover(@PathVariable("codigo") Ajuste ajuste, UriComponentsBuilder builder) {
 		UriComponents component = builder.path("/ajustes").build();
 		
@@ -108,10 +113,10 @@ public class AjusteController {
 		return component.toString();
 	}
 	
-	@RequestMapping(value = "/remove/item", method = RequestMethod.DELETE)
+	@DeleteMapping("/remove/item")
 	public @ResponseBody String removeItem(@RequestParam Map<String, String> request) {
-		Long codajuste = Long.decode(request.get("codajuste"));
-		Long coditem = Long.decode(request.get("coditem"));
+		Long codajuste = Long.decode(request.get(COD_AJUSTE));
+		Long coditem = Long.decode(request.get(COD_PROD));
 		
 		return ajusteProdutos.removeProduto(codajuste, coditem);
 	}

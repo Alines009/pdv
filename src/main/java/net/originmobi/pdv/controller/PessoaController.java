@@ -10,8 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -64,14 +65,14 @@ public class PessoaController {
 		return mv;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public @ResponseBody String cadastrar(@RequestParam Map<String, String> request, RedirectAttributes attributes) throws ParseException {
 		// Pessoa
 		String stCodPessoa = request.get("codigo") != null ? request.get("codigo") : "";
 		String nome = request.get("nome");
 		String apelido = request.get("apelido");
 		String cpfcnpj = request.get("cpfcnpj").replaceAll("\\D", "");
-		String data_nascimento = request.get("data_nascimento");
+		String dataNascimento = request.get("data_nascimento");
 		String observacao = request.get("observacao");
 		
 		// Endereço
@@ -92,7 +93,7 @@ public class PessoaController {
 		Long codendereco = stCodEndereco.isEmpty() ? 0L : Long.decode(stCodEndereco);
 		Long codfone = stCodFone.isEmpty() ? 0L : Long.decode(stCodFone);
 
-		return pessoas.cadastrar(codpessoa, nome, apelido, cpfcnpj, data_nascimento, observacao, codendereco, codcidade, rua,
+		return pessoas.cadastrar(codpessoa, nome, apelido, cpfcnpj, dataNascimento, observacao, codendereco, codcidade, rua,
 				bairro, numero, cep, referencia, codfone, fone, tipo, attributes);
 	}
 
@@ -105,7 +106,7 @@ public class PessoaController {
 		return mv;
 	}
 
-	@RequestMapping(value = "/{codigo}", method = RequestMethod.PUT)
+	@PutMapping("/{codigo}")
 	public @ResponseBody Pessoa busca(@PathVariable("codigo") Long codigo) {
 		return pessoas.busca(codigo);
 	}
