@@ -83,7 +83,7 @@ public class PessoaServiceTest {
         String expectedMsg = "Pessoa salva com sucesso";
        
 		RedirectAttributes attributes = null;
-		String msg = pessoaService.cadastrar(pessoa.getCodigo(), pessoa.getNome(), pessoa.getApelido(), pessoa.getCpfcnpj(), pessoa.getData_nascimento().toString(),
+		String msg = pessoaService.cadastrar(pessoa.getCodigo(), pessoa.getNome(), pessoa.getApelido(), pessoa.getCpfcnpj(), pessoa.getDataNascimento().toString(),
 				pessoa.getObservacao(), pessoa.getEndereco().getCodigo(), pessoa.getEndereco().getCidade().getCodigo(), pessoa.getEndereco().getRua(), pessoa.getEndereco().getBairro(),pessoa.getEndereco().getNumero(), pessoa.getEndereco().getCep(),
 				pessoa.getEndereco().getReferencia(), pessoa.getTelefone().get(0).getCodigo(), pessoa.getTelefone().get(0).getFone(), pessoa.getTelefone().get(0).getTipo().toString(), attributes);
 				
@@ -105,7 +105,7 @@ public class PessoaServiceTest {
         String expectedMsg = "Já existe uma pessoa cadastrada com este CPF/CNPJ, verifique";
         
         RedirectAttributes attributes = null;
-        String msg = pessoaService.cadastrar(pessoa.getCodigo(), pessoa.getNome(), pessoa.getApelido(), pessoa.getCpfcnpj(), pessoa.getData_nascimento().toString(),
+        String msg = pessoaService.cadastrar(pessoa.getCodigo(), pessoa.getNome(), pessoa.getApelido(), pessoa.getCpfcnpj(), pessoa.getDataNascimento().toString(),
 				pessoa.getObservacao(), pessoa.getEndereco().getCodigo(), pessoa.getEndereco().getCidade().getCodigo(), pessoa.getEndereco().getRua(), pessoa.getEndereco().getBairro(),pessoa.getEndereco().getNumero(), pessoa.getEndereco().getCep(),
 				pessoa.getEndereco().getReferencia(), pessoa.getTelefone().get(0).getCodigo(), pessoa.getTelefone().get(0).getFone(), pessoa.getTelefone().get(0).getTipo().toString(), attributes);
 				

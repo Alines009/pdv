@@ -34,8 +34,8 @@ public class PessoaFactory {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		 pessoa.setData_nascimento(dataNascimento);
-		 pessoa.setData_cadastro(Date.valueOf(dataAtual));
+		 pessoa.setDataNascimento(dataNascimento);
+		 pessoa.setDataCadastro(Date.valueOf(dataAtual));
 			
 			
 		 pessoa.setObservacao("Essa é uma observação");

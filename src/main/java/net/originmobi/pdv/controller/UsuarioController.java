@@ -77,7 +77,7 @@ public class UsuarioController {
 		return mv;
 	}
 
-	@PutMapping("/addgrupo")
+	@PostMapping("/addgrupo")
 	public @ResponseBody String addGrupo(@RequestParam Map<String, String> request) {
 
 		if (request.get(CODIGO_GRU).length() == 0)

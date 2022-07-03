@@ -72,7 +72,7 @@ public class PessoaController {
 		String nome = request.get("nome");
 		String apelido = request.get("apelido");
 		String cpfcnpj = request.get("cpfcnpj").replaceAll("\\D", "");
-		String dataNascimento = request.get("data_nascimento");
+		String dataNascimento = request.get("dataNascimento");
 		String observacao = request.get("observacao");
 		
 		// Endereço

@@ -1,5 +1,7 @@
 package net.originmobi.pdv.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -20,6 +22,9 @@ public class GrupoController {
 
 	private static final String GRUPO_LIST = "grupo/list";
 	private static final String GRUPO_FORM = "grupo/form";
+	
+	Logger logger = LoggerFactory.getLogger(GrupoController.class);
+	
 	@Autowired
 	private GrupoService grupos;
 
@@ -53,7 +58,7 @@ public class GrupoController {
 			grupos.cadastrar(grupo);
 			attributes.addFlashAttribute("mensagem", "Grupo salvo com sucesso");
 		} catch (Exception e) {
-			System.out.println("Erro ao cadastrar Grupo " + e);
+			logger.error(String.format("Erro ao cadastrar Grupo %s", e));
 		}
 
 		return "redirect:/grupo/form";

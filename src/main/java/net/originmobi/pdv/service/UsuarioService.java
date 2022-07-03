@@ -29,7 +29,7 @@ public class UsuarioService {
 	 * vinculado a outro usuário.
 	 */
 	public String cadastrar(Usuario usuario) {
-		usuario.setData_cadastro(Date.valueOf(dataAtual));
+		usuario.setDataCadastro(Date.valueOf(dataAtual));
 		String mensagem = "";
 		
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -87,8 +87,7 @@ public class UsuarioService {
 		Usuario usuario = usuarios.findByCodigoIn(codUsu);
 		GrupoUsuario gruposUsu = grupos.buscaGrupo(codGru);
 
-		List<GrupoUsuario> todosGrupos = new ArrayList<>();
-		todosGrupos = grupos.buscaGrupos(usuario);
+		List<GrupoUsuario> todosGrupos = grupos.buscaGrupos(usuario);
 
 		for (int i = 0; i < todosGrupos.size(); i++) {
 			if (todosGrupos.get(i).getCodigo() == gruposUsu.getCodigo()) {

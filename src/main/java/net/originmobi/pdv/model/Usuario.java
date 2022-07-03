@@ -30,7 +30,8 @@ public class Usuario implements Serializable {
 
 	@NotBlank(message = "Senha não pode ser vazia")
 	private String senha;
-	private Date data_cadastro;
+	
+	private Date dataCadastro;
 
 	@OneToOne
 	private Pessoa pessoa;
@@ -45,14 +46,14 @@ public class Usuario implements Serializable {
 	public Usuario() {
 	}
 
-	public Usuario(Long codigo, String user, String senha, Date data_cadastro, Pessoa pessoa,
-			List<GrupoUsuario> grupousuario, List<Permissoes> permissoes) {
+	public Usuario(Long codigo, String user, String senha, Date dataCadastro, Pessoa pessoa,
+			List<GrupoUsuario> grupoUsuario, List<Permissoes> permissoes) {
 		this.codigo = codigo;
 		this.user = user;
 		this.senha = senha;
-		this.data_cadastro = data_cadastro;
+		this.dataCadastro = dataCadastro;
 		this.pessoa = pessoa;
-		this.grupousuario = grupousuario;
+		this.grupousuario = grupoUsuario;
 		this.permissoes = permissoes;
 	}
 
@@ -80,12 +81,12 @@ public class Usuario implements Serializable {
 		this.senha = senha;
 	}
 
-	public Date getData_cadastro() {
-		return data_cadastro;
+	public Date getDataCadastro() {
+		return dataCadastro;
 	}
 
-	public void setData_cadastro(Date data_cadastro) {
-		this.data_cadastro = data_cadastro;
+	public void setDataCadastro(Date dataCadastro) {
+		this.dataCadastro = dataCadastro;
 	}
 
 	public Pessoa getPessoa() {
@@ -100,8 +101,8 @@ public class Usuario implements Serializable {
 		return grupousuario;
 	}
 
-	public void setGrupoUsuario(List<GrupoUsuario> grupousuario) {
-		this.grupousuario = grupousuario;
+	public void setGrupoUsuario(List<GrupoUsuario> grupoUsuario) {
+		this.grupousuario = grupoUsuario;
 	}
 
 	public List<Permissoes> getPermissoes() {
