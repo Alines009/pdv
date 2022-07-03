@@ -1,5 +1,8 @@
 package net.originmobi.pdv.xml.nfe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,6 +47,8 @@ import org.xml.sax.SAXException;
 
 public class AssinaXML {
 	private static final String NFE = "NFe";
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private PrivateKey privateKey;
 	private KeyInfo keyInfo;
@@ -54,7 +59,7 @@ public class AssinaXML {
 		try {
 			path = new File(".").getCanonicalPath();
 		} catch (Exception e) {
-			System.out.println(e);
+			logger.error(e.getMessage());
 		}
 
 		String caminhoCertificado = path + "/" + "src/main/resources/certificado/certificado.pfx";
@@ -63,10 +68,10 @@ public class AssinaXML {
 		String xmlAssinado = "";
 		try {
 			xmlAssinado = assinarEnviNFe(xml, caminhoCertificado, senhaCertificado);
-			System.out.println(xmlAssinado);
+			logger.info(xmlAssinado);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(e);
+			logger.error(e.getMessage());
 		}
 
 		return xmlAssinado;
@@ -95,7 +100,7 @@ public class AssinaXML {
 
 	private ArrayList<Transform> signatureFactory(XMLSignatureFactory signatureFactory)
 			throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-		ArrayList<Transform> transformList = new ArrayList<Transform>();
+		ArrayList<Transform> transformList = new ArrayList<>();
 		TransformParameterSpec tps = null;
 		Transform envelopedTransform = signatureFactory.newTransform(Transform.ENVELOPED, tps);
 		Transform c14NTransform = signatureFactory.newTransform("http://www.w3.org/TR/2001/REC-xml-c14n-20010315", tps);
@@ -119,7 +124,7 @@ public class AssinaXML {
 		KeyStore.PrivateKeyEntry pkEntry = null;
 		Enumeration<String> aliasesEnum = ks.aliases();
 		while (aliasesEnum.hasMoreElements()) {
-			String alias = (String) aliasesEnum.nextElement();
+			String alias = aliasesEnum.nextElement();
 			if (ks.isKeyEntry(alias)) {
 				pkEntry = (KeyStore.PrivateKeyEntry) ks.getEntry(alias,
 						new KeyStore.PasswordProtection(senha.toCharArray()));
@@ -128,11 +133,13 @@ public class AssinaXML {
 			}
 		}
 
-		X509Certificate cert = (X509Certificate) pkEntry.getCertificate();
-		System.out.println("Data Certificado " + cert.getNotAfter());
+		X509Certificate cert = pkEntry != null ? (X509Certificate) pkEntry.getCertificate() : null;
+		if (cert != null) {
+			logger.info("Data Certificado {}", cert.getNotAfter());
+		}
 
 		KeyInfoFactory keyInfoFactory = signatureFactory.getKeyInfoFactory();
-		List<X509Certificate> x509Content = new ArrayList<X509Certificate>();
+		List<X509Certificate> x509Content = new ArrayList<>();
 
 		x509Content.add(cert);
 		X509Data x509Data = keyInfoFactory.newX509Data(x509Content);
@@ -168,8 +175,8 @@ public class AssinaXML {
 		trans.transform(new DOMSource(doc), new StreamResult(os));
 		String xml = os.toString();
 		if ((xml != null) && (!"".equals(xml))) {
-			xml = xml.replaceAll("\\r\\n", "");
-			xml = xml.replaceAll(" standalone=\"no\"", "");
+			xml = xml.replace("\\r\\n", "");
+			xml = xml.replace(" standalone=\"no\"", "");
 		}
 		return xml;
 	}

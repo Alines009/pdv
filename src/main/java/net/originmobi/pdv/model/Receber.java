@@ -40,16 +40,15 @@ public class Receber implements Serializable {
 	@OneToOne
 	private Venda venda;
 
-	@Deprecated
 	public Receber() {
 	}
 
-	public Receber(String observacao, Double valor_total, Pessoa pessoa, Timestamp data_cadastro,
+	public Receber(String observacao, Double valorTotal, Pessoa pessoa, Timestamp dataCadastro,
 			Venda venda) {
 		this.observacao = observacao;
-		this.valor_total = valor_total;
+		this.valor_total = valorTotal;
 		this.pessoa = pessoa;
-		this.data_cadastro = data_cadastro;
+		this.data_cadastro = dataCadastro;
 		this.venda = venda;
 	}
 
@@ -73,8 +72,8 @@ public class Receber implements Serializable {
 		return valor_total;
 	}
 
-	public void setValor_total(Double valor_total) {
-		this.valor_total = valor_total;
+	public void setValor_total(Double valorTotal) {
+		this.valor_total = valorTotal;
 	}
 
 	public Pessoa getPessoa() {
@@ -89,8 +88,8 @@ public class Receber implements Serializable {
 		return data_cadastro;
 	}
 
-	public void setData_cadastro(Timestamp data_cadastro) {
-		this.data_cadastro = data_cadastro;
+	public void setData_cadastro(Timestamp dataCadastro) {
+		this.data_cadastro = dataCadastro;
 	}
 
 	public Venda getVenda() {

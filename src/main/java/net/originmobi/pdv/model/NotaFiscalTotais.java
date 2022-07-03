@@ -59,7 +59,6 @@ public class NotaFiscalTotais implements Serializable {
 	@NumberFormat(pattern = "R$ #,##0.00")
 	private Double v_nf;
 
-	@Deprecated
 	public NotaFiscalTotais() {
 		super();
 	}

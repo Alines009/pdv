@@ -263,10 +263,10 @@ public class VendaService {
 		}
 
 		try {
-			Double valor_parcela = (Double.valueOf(vlParcelas[i]) + acre) - desc;
-			parcelas.gerarParcela(valor_parcela, 0.00, 0.00, 0.0, valor_parcela, receber, 0, sequencia,
+			Double valorParcela = (Double.valueOf(vlParcelas[i]) + acre) - desc;
+			parcelas.gerarParcela(valorParcela, 0.00, 0.00, 0.0, valorParcela, receber, 0, sequencia,
 					dataAtual.dataAtualTimeStamp(),
-					Date.valueOf(dataAtual.DataAtualIncrementa(Integer.parseInt(formaPagar[i]))));
+					Date.valueOf(dataAtual.dataAtualIncrementa(Integer.parseInt(formaPagar[i]))));
 
 		} catch (Exception e) {
 			e.getMessage();
@@ -306,8 +306,8 @@ public class VendaService {
 		Aplicacao aplicacao = Aplicacao.getInstancia();
 		Usuario usuario = usuarios.buscaUsuario(aplicacao.getUsuarioAtual());
 
-		Double valor_parcela = (Double.valueOf(vlParcelas[i]) + acre) - desc;
-		CaixaLancamento lancamento = new CaixaLancamento("Recebimento de venda á vista", valor_parcela,
+		Double valorParcela = (Double.valueOf(vlParcelas[i]) + acre) - desc;
+		CaixaLancamento lancamento = new CaixaLancamento("Recebimento de venda á vista", valorParcela,
 				TipoLancamento.RECEBIMENTO, EstiloLancamento.ENTRADA, caixa.get(), usuario);
 
 		try {

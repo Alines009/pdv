@@ -53,7 +53,6 @@ public class Parcela implements Serializable {
 	@DateTimeFormat(pattern = "dd/MM/yyyy hh:mm:ss")
 	private Timestamp data_pagamento;
 
-	@Deprecated
 	public Parcela() {
 	}
 

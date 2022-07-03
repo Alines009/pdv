@@ -70,7 +70,6 @@ public class CartaoLancamento implements Serializable {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date data_cadastro;
 
-	@Deprecated
 	public CartaoLancamento() {
 		super();
 	}

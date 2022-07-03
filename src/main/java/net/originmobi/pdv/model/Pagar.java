@@ -42,7 +42,6 @@ public class Pagar implements Serializable {
 	@JoinColumn(name="pagartipo_codigo")
 	private PagarTipo tipo;
 
-	@Deprecated
 	public Pagar() {
 		super();
 	}

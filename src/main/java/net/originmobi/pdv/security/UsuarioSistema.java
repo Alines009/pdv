@@ -18,6 +18,11 @@ public class UsuarioSistema extends User implements Serializable {
 
 		this.nome = nome;
 	}
+	
+    @Override
+    public boolean equals(Object rhs) {
+        return super.equals(rhs) && nome.equals(((UsuarioSistema) rhs).getNome());
+    }
 
 	public String getNome() {
 		return nome;

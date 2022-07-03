@@ -42,11 +42,11 @@ public class LoginUserDatailsService implements UserDetailsService {
 				authorities(usuario));
 	}
 
-	public Collection<? extends GrantedAuthority> authorities(Usuario usuario) {
+	public Collection<GrantedAuthority> authorities(Usuario usuario) {
 		return authorities(grupos.findByUsuarioIn(usuario));
 	}
 
-	public Collection<? extends GrantedAuthority> authorities(List<GrupoUsuario> grupos) {
+	public Collection<GrantedAuthority> authorities(List<GrupoUsuario> grupos) {
 		Collection<GrantedAuthority> auths = new ArrayList<>();
 
 		for (GrupoUsuario grupo : grupos) {

@@ -58,7 +58,6 @@ public class PagarParcela implements Serializable {
 	@ManyToOne
 	private Pagar pagar;
 
-	@Deprecated
 	public PagarParcela() {
 		super();
 	}
