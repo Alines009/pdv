@@ -1430,8 +1430,7 @@ USE `pdv`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `pdv`.`insere_estoque_inicial_AFTER_INSERT` AFTER INSERT ON `produto` FOR EACH ROW
 BEGIN
 	SET @codprod = new.codigo;
-    
-    insert into produto_estoque (produto_codigo, qtd) values (@codprod, 0);
+  insert into produto_estoque (produto_codigo, qtd) values (@codprod, 0);
 
 END$$
 
@@ -1505,15 +1504,21 @@ END$$
 USE `pdv`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `pdv`.`atualiza_produto_estoque_AFTER_INSERT` AFTER INSERT ON `estoque_movimentacao` FOR EACH ROW
 BEGIN
-		SET @codprod = new.produto_codigo;
-        SET @qtd = new.qtd;
+	SET @codprod = new.produto_codigo;
+        SET @novaqtd = new.qtd;
+        SET @tipo = new.tipo;
         
-        select coalesce(qtd, 0) INTO @qtd_estoque from produto_estoque where produto_codigo = @codprod;
+        if(@tipo = "ENTRADA") then 
         
-        IF(@qtd <= @qtd_estoque) THEN
-			SET @novo_estoque = (@qtd_estoque - @qtd);
-			update produto_estoque set qtd = @novo_estoque where produto_codigo = @codprod;
-		end if;
+		set @estoque_atual = (select qtd from produto_estoque where produto_codigo = @codprod);
+		update produto_estoque set qtd = (@estoque_atual + @novaqtd) where produto_codigo = @codprod;
+        
+        elseif(@tipo = "SAIDA") then
+
+		set @estoque_atual = (select qtd from produto_estoque where produto_codigo = @codprod);
+		update produto_estoque set qtd = (@estoque_atual - @novaqtd) where produto_codigo = @codprod;
+	end if;
+
 END;$$
 
 
