@@ -34,79 +34,69 @@ public class UsuarioServiceTest {
     @BeforeEach
     void inicialize(){
 
-        when(usuarioRepositoryMock.findAll()).thenReturn(UsuarioFactory.criarListaUsuariosValidos());
-        
-        when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong())).thenReturn(UsuarioFactory.criarUsuarioValido());
-        
-        when(usuarioRepositoryMock.save(ArgumentMatchers.any(Usuario.class))).thenReturn(UsuarioFactory.criarUsuarioValido());
-     
+       when(usuarioRepositoryMock.findAll()).thenReturn(UsuarioFactory.criarListaUsuariosValidos());
+                        
     }
-    
+        
     @Test
     @DisplayName("Testa cadastrar um usuário")
     public void cadastrar(){
 
-        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString())).thenReturn(UsuarioFactory.criarUsuarioValido());
-
-        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong())).thenReturn(null);
-
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString())).thenReturn(null);
+        
         Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
-        String expectedMsg = "Usuário salvo com sucesso";
+        
+        String msgEsperada = "Usuário salvo com sucesso";
         String msg = usuarioService.cadastrar(usuario);
-
-        assertEquals(expectedMsg, msg);
+       
+        assertEquals(msgEsperada, msg);
+        
     }
 
     @Test
     @DisplayName("Testa cadastrar um usuário já existente")
     public void cadastrarUsuarioExistente(){
-
-        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
-               .thenReturn(UsuarioFactory.criarUsuarioValido());
-
-        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
-                .thenReturn(null);
-
-        Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
-        String expectedMsg = "Usuário já existe";
-        String msg = usuarioService.cadastrar(usuario);
-
-        assertEquals(expectedMsg, msg);
+                
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString())).thenReturn(UsuarioFactory.criarUsuarioValidoParaInserir());
+         
+         Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
+         String msgEsperada = "Usuário já existe";
+         String msg = usuarioService.cadastrar(usuario);
+        
+         assertEquals(msgEsperada, msg);
     }
     
     @Test
     @DisplayName("Testa cadastrar um usuário já vinculado a uma pessoa")
     public void cadastrarUsuarioJaVinculado(){
 
-        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
-                .thenReturn(null);
+        when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString())).thenReturn(null);
 
-        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong()))
-                .thenReturn(null);
-
+        when(usuarioRepositoryMock.findByPessoaCodigoEquals(ArgumentMatchers.anyLong())).thenReturn(UsuarioFactory.criarUsuarioValidoComPessoaEGrupo());
+   
         Usuario usuario = UsuarioFactory.criarUsuarioValidoParaInserir();
-        String expectedMsg = "Pessoa já vinculada a outro usuário";
+        String msgEsperada = "Pessoa já vinculada a outro usuário";
         String msg = usuarioService.cadastrar(usuario);
 
-        assertEquals(expectedMsg, msg);
+        assertEquals(msgEsperada, msg);
     }
 
     @Test
-    @DisplayName("Testa atualizar um cadastro")
+    @DisplayName("Testa atualizar o cadastro de uma pessoa")
     public void atualizarCadastro(){
 
         Usuario usuario = UsuarioFactory.criarUsuarioValido();
-        String expectedMsg = "Usuário atualizado com sucesso";
+        String msgEsperada = "Usuário atualizado com sucesso";
         String msg = usuarioService.cadastrar(usuario);
 
-        assertEquals(expectedMsg, msg);
+        assertEquals(msgEsperada, msg);
     }
 
     @Test
-    @DisplayName("Testa o método lista")
+    @DisplayName("Testa o método de listar pessoas")
     public void lista(){
 
-        Long expectedCod = UsuarioFactory.criarListaUsuariosValidos().get(0).getCodigo();
+        Long codEsperado = UsuarioFactory.criarListaUsuariosValidos().get(0).getCodigo();
         List<Usuario> usuarios = usuarioService.lista();
         Long cod = usuarios.get(0).getCodigo();
         Assertions.assertThat(usuarios)
@@ -114,46 +104,30 @@ public class UsuarioServiceTest {
                 .isNotEmpty()
                 .hasSize(1);
 
-        assertEquals(expectedCod, cod);
+        assertEquals(codEsperado, cod);
 
     }
 
     @Test
-    @DisplayName("Testa o metodo addGrupo")
+    @DisplayName("Testa adicionar um grupo a um usuário")
     public void addGrupo(){
 
         when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
-                .thenReturn(UsuarioFactory.criarUsuarioValido());
-        when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
-                .thenReturn(GrupoUsuarioFactory.criarGrupoUsuarioValido());
-
-        Long userCod = UsuarioFactory.criarUsuarioValido().getCodigo();
-        Long groupCod = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo();
-        String expectedMsg = "ok";
-        String msg = usuarioService.addGrupo(userCod, groupCod);
-
-        assertEquals(expectedMsg, msg);
-    }
-
-    @Test
-    @DisplayName("Testa o metodo addGrupo tentando inserir um usuário em um grupo que ele já está inserido")
-    public void addGrupoExistente(){
+               .thenReturn(UsuarioFactory.criarUsuarioValido());
         
-        when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
-                .thenReturn(UsuarioFactory.criarUsuarioValidoComPessoaEGrupo());
         when(grupoUsuarioServiceMock.buscaGrupo(ArgumentMatchers.anyLong()))
                 .thenReturn(GrupoUsuarioFactory.criarGrupoUsuarioValido());
 
-        Long userCod = UsuarioFactory.criarUsuarioValidoComPessoaEGrupo().getCodigo();
-        Long groupCod = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo().longValue();
-        String expectedMsg = "ja existe";
-        String msg = usuarioService.addGrupo(userCod, groupCod);
+        Long codUsuario = UsuarioFactory.criarUsuarioValido().getCodigo();
+        Long codGrupo = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo();
+        String msgEsperada = "ok";
+        String msg = usuarioService.addGrupo(codUsuario, codGrupo);
 
-        assertEquals(expectedMsg, msg);
+        assertEquals(msgEsperada, msg);
     }
-
+   
     @Test
-    @DisplayName("Testa o metodo removeGrupo")
+    @DisplayName("Testa remover um grupo de um usuário")
     public void removeGrupo(){
 
         when(usuarioRepositoryMock.findByCodigoIn(ArgumentMatchers.anyLong()))
@@ -165,25 +139,25 @@ public class UsuarioServiceTest {
         when(grupoUsuarioServiceMock.buscaGrupos(ArgumentMatchers.any(Usuario.class)))
                 .thenReturn(UsuarioFactory.criarUsuarioValido().getGrupoUsuario());
 
-        Long userCod = UsuarioFactory.criarUsuarioValido().getCodigo();
-        Long groupCod = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo();
-        String expectedMsg = "ok";
-        String msg = usuarioService.removeGrupo(userCod, groupCod);
-        assertEquals(expectedMsg, msg);
+        Long codUsuario = UsuarioFactory.criarUsuarioValido().getCodigo();
+        Long codGrupo = GrupoUsuarioFactory.criarGrupoUsuarioValido().getCodigo();
+        String msgEsperada = "ok";
+        String msg = usuarioService.removeGrupo(codUsuario, codGrupo);
+        assertEquals(msgEsperada, msg);
 
     }
 
     @Test
-    @DisplayName("Testa o metodo buscaUsuario")
+    @DisplayName("Testa buscar um usuário")
     public void buscaUsuario(){
         when(usuarioRepositoryMock.findByUserEquals(ArgumentMatchers.anyString()))
                 .thenReturn(UsuarioFactory.criarUsuarioValido());
 
-        Usuario expectedUser = UsuarioFactory.criarUsuarioValido();
-        String name = "gerente";
-        Usuario user = usuarioService.buscaUsuario(name);
+        Usuario usuarioEsperado = UsuarioFactory.criarUsuarioValido();
+        String nome = "gerente";
+        Usuario usuario = usuarioService.buscaUsuario(nome);
 
-        assertNotNull(user);
-        assertEquals(expectedUser.getCodigo(), user.getCodigo());
+        assertNotNull(usuario);
+        assertEquals(usuarioEsperado.getCodigo(), usuario.getCodigo());
     }
 }

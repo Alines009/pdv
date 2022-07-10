@@ -11,21 +11,19 @@ import net.originmobi.pdv.service.TelefoneService;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PessoaFactory {
 
 	public static Pessoa criarPessoaValida() {
+		
 		 Pessoa pessoa = new Pessoa();
 		 pessoa.setCodigo(10L);
 		 pessoa.setNome("Ana Clara");
 		 pessoa.setApelido("Aninha");
 		 pessoa.setCpfcnpj("4589654785-87");		 
-		 
-		 LocalDate dataAtual = LocalDate.now();
-		 
+		 		 
 		 String data_nascimento = "01/10/1999";
 		 SimpleDateFormat formata = new SimpleDateFormat("dd/MM/yyyy");
 		 Date dataNascimento = null;
@@ -35,14 +33,13 @@ public class PessoaFactory {
 			e.printStackTrace();
 		}
 		 pessoa.setDataNascimento(dataNascimento);
-		 pessoa.setDataCadastro(Date.valueOf(dataAtual));
-			
-			
-		 pessoa.setObservacao("Essa é uma observação");
+
+		 pessoa.setDataCadastro(new Date(System.currentTimeMillis()));
+		 									
+		pessoa.setObservacao("Essa é uma observação");
 		 
 		 Endereco endereco = new Endereco();
 		 
-		 	Cidade cidade = new Cidade();
 			Pais pais = new Pais();
 			pais.setCodigo(12L);
 			pais.setCodigo_pais("BRA");
@@ -50,25 +47,28 @@ public class PessoaFactory {
 			
 		 	Estado estado = new Estado();
 			estado.setCodigo(11L);
-			estado.setCodigoUF("RJ11L");
+			estado.setCodigoUF("14L");
 			estado.setNome("Rio de Janeiro");
 			estado.setPais(pais);
 			estado.setSigla("RJ");
 			
+		 	Cidade cidade = new Cidade();
 			cidade.setCodigo(12L);
 			cidade.setCodigo_municipio("rj");
 			cidade.setEstado(estado);
 			cidade.setNome("Rio de Janeiro");
-			
+					
 			endereco.setCidade(cidade);
-			
+
 			endereco.setRua("15");
 			endereco.setBairro("Copacabana");
 			endereco.setNumero("189");
 			endereco.setCep("248966-000");
 			endereco.setReferencia("Sem rf");
-
-		 pessoa.setEndereco(endereco);
+			endereco.setCodigo(16L);
+			endereco.setData_cadastro(new Date(System.currentTimeMillis()));
+		
+			pessoa.setEndereco(endereco);
 		 
 			Telefone telefone = new Telefone();
 			
@@ -82,7 +82,7 @@ public class PessoaFactory {
 
 			List<Telefone> fones = new ArrayList<>();
 			fones.add(telefones.cadastrar(telefone));
-
+			
 		 pessoa.setTelefone(fones);
 
 		 return pessoa;
@@ -94,20 +94,15 @@ public class PessoaFactory {
         pessoas.add(criarPessoaValida());
         return pessoas;
     }
+
+
+	public static Pessoa tentarInserirPessoaJaExistente() {
+		Pessoa pessoa = criarPessoaValida();
+		pessoa.setCodigo(0L);
+		return pessoa;
+	}
+	
+	
     
-
-    public static Pessoa criarPessoaValidaParaInserir() {
-        Pessoa pessoa = criarPessoaValida();
-        pessoa.setCodigo(null);
-        return  pessoa;
-    }
-
-    public static Pessoa criarPessoaInvalidaParaInserir() {
-        Pessoa pessoa = null;
-        return  pessoa;
-    }
-    
-
-
 
 }
