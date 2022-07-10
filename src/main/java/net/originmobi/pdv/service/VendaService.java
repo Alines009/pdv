@@ -34,6 +34,9 @@ import net.originmobi.pdv.service.cartao.CartaoLancamentoService;
 import net.originmobi.pdv.singleton.Aplicacao;
 import net.originmobi.pdv.utilitarios.DataAtual;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class VendaService {
 
@@ -71,6 +74,9 @@ public class VendaService {
 	private ProdutoService produtos;
 
 	private Timestamp dataHoraAtual = new Timestamp(System.currentTimeMillis());
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final String MSG_ERRO = "Erro ao fechar a venda, chame o suporte";
 
 	public Long abreVenda(Venda venda) {
 		if (venda.getCodigo() == null) {
@@ -190,8 +196,8 @@ public class VendaService {
 		try {
 			receberServ.cadastrar(receber);
 		} catch (Exception e) {
-			System.out.println(e);
-			throw new RuntimeException("Erro ao fechar a venda, chame o suporte");
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(MSG_ERRO);
 		}
 
 		Double desc = desconto / vlParcelas.length;
@@ -217,9 +223,9 @@ public class VendaService {
 				else if (titulo.get().getTipo().getSigla().equals(TituloTipo.CARTDEB.toString())
 						|| titulo.get().getTipo().getSigla().equals(TituloTipo.CARTCRED.toString())) {
 
-					Double vl_parcela = Double.valueOf(vlParcelas[i]);
+					Double vlParcela = Double.valueOf(vlParcelas[i]);
 
-					cartaoLancamento.lancamento(vl_parcela, titulo);
+					cartaoLancamento.lancamento(vlParcela, titulo);
 				}
 
 			} else {
@@ -229,7 +235,7 @@ public class VendaService {
 					throw new RuntimeException("Venda sem cliente, verifique");
 
 				// no dinheiro
-				sequencia = aprazo(vlprodutos, vlParcelas, dataAtual, formaPagar, qtdVezes, sequencia, receber, i, desc,
+				sequencia = aprazo(vlParcelas, dataAtual, formaPagar,sequencia, receber, i, desc,
 						acre);
 			}
 
@@ -239,8 +245,8 @@ public class VendaService {
 				vendas.fechaVenda(venda, VendaSituacao.FECHADA, vlFinal, desconto, acrescimo,
 						dataAtual.dataAtualTimeStamp(), formaPagamento);
 			} catch (Exception e) {
-				System.out.println(e);
-				throw new RuntimeException("Erro ao fechar a venda, chame o suporte");
+				logger.error(e.getMessage(), e);
+				throw new RuntimeException(MSG_ERRO);
 			}
 
 		}
@@ -255,8 +261,7 @@ public class VendaService {
 	 * Responsável por realizar o lançamento quando a parcela da venda é a prazo
 	 * 
 	 */
-	private int aprazo(Double vlprodutos, String[] vlParcelas, DataAtual dataAtual, String[] formaPagar, int qtdVezes,
-			int sequencia, Receber receber, int i, Double acre, Double desc) {
+	private int aprazo(String[] vlParcelas, DataAtual dataAtual, String[] formaPagar,int sequencia, Receber receber, int i, Double acre, Double desc) {
 
 		if (vlParcelas[i].isEmpty()) {
 			throw new RuntimeException("valor de recebimento invalido");
@@ -269,7 +274,7 @@ public class VendaService {
 					Date.valueOf(dataAtual.dataAtualIncrementa(Integer.parseInt(formaPagar[i]))));
 
 		} catch (Exception e) {
-			e.getMessage();
+			logger.error(e.getMessage(), e);
 			throw new RuntimeException();
 		}
 
@@ -307,14 +312,14 @@ public class VendaService {
 		Usuario usuario = usuarios.buscaUsuario(aplicacao.getUsuarioAtual());
 
 		Double valorParcela = (Double.valueOf(vlParcelas[i]) + acre) - desc;
-		CaixaLancamento lancamento = new CaixaLancamento("Recebimento de venda á vista", valorParcela,
+		CaixaLancamento lancamento = new CaixaLancamento("Recebimento de venda à vista", valorParcela,
 				TipoLancamento.RECEBIMENTO, EstiloLancamento.ENTRADA, caixa.get(), usuario);
 
 		try {
 			lancamentos.lancamento(lancamento);
 		} catch (Exception e) {
-			System.out.println(e);
-			throw new RuntimeException("Erro ao fechar a venda, chame o suporte");
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(MSG_ERRO);
 		}
 		return qtdVezes;
 	}

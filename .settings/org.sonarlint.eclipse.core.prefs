@@ -1,0 +1,3 @@
+autoEnabled=true
+eclipse.preferences.version=1
+fileExclusions=FILE\:src/test/java/net/originmobi/pdv/service/CaixaServiceTest.java\r\nFILE\:src/test/java/net/originmobi/pdv/service/PessoaServiceTest.java\r\nFILE\:src/test/java/net/originmobi/pdv/service/UsuarioServiceTest.java

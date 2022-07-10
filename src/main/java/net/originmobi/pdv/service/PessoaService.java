@@ -57,7 +57,7 @@ public class PessoaService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public String cadastrar(Long codpessoa, String nome, String apelido, String cpfcnpj, String data_nascimento,
+	public String cadastrar(Long codpessoa, String nome, String apelido, String cpfcnpj, String dataNascimentoStr,
 			String observacao, Long codendereco, Long codcidade, String rua, String bairro, String numero, String cep,
 			String referencia, Long codfone, String fone, String tipo, RedirectAttributes attributes)
 			throws ParseException {
@@ -105,7 +105,7 @@ public class PessoaService {
 		pessoa.setCpfcnpj(cpfcnpj);
 
 		SimpleDateFormat formata = new SimpleDateFormat("dd/MM/yyyy");
-		Date dataNascimento = new Date(formata.parse(data_nascimento).getTime());
+		Date dataNascimento = new Date(formata.parse(dataNascimentoStr).getTime());
 		pessoa.setDataNascimento(dataNascimento);
 		pessoa.setObservacao(observacao);
 		pessoa.setDataCadastro(Date.valueOf(dataAtual));

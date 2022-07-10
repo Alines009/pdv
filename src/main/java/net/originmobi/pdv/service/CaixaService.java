@@ -23,11 +23,13 @@ import net.originmobi.pdv.model.Usuario;
 import net.originmobi.pdv.repository.CaixaRepository;
 import net.originmobi.pdv.singleton.Aplicacao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class CaixaService {
 
 	private String descricao;
-	private Usuario usuario;
 
 	@Autowired
 	private CaixaRepository caixas;
@@ -37,6 +39,8 @@ public class CaixaService {
 
 	@Autowired
 	private CaixaLancamentoService lancamentos;
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public Long cadastro(Caixa caixa) {
@@ -53,7 +57,7 @@ public class CaixaService {
 			throw new RuntimeException("Valor informado é inválido");
 
 		Aplicacao aplicacao = Aplicacao.getInstancia();
-		usuario = usuarios.buscaUsuario(aplicacao.getUsuarioAtual());
+		Usuario usuario = usuarios.buscaUsuario(aplicacao.getUsuarioAtual());
 
 		if (caixa.getTipo().equals(CaixaTipo.CAIXA))
 			descricao = caixa.getDescricao().isEmpty() ? "Caixa diário" : caixa.getDescricao();
@@ -70,8 +74,6 @@ public class CaixaService {
 
 		// se for BANCO, limpa os valores especiais de agencia e conta
 		if (caixa.getTipo().equals(CaixaTipo.BANCO)) {
-			System.out.println("agencia " + caixa.getAgencia());
-			System.out.println("conta " + caixa.getConta());
 			caixa.setAgencia(caixa.getAgencia().replaceAll("\\D", ""));
 			caixa.setConta(caixa.getConta().replaceAll("\\D", ""));
 		}
@@ -79,15 +81,14 @@ public class CaixaService {
 		try {
 			caixas.save(caixa);
 		} catch (Exception e) {
-			e.getStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new RuntimeException("Erro no processo de abertura, chame o suporte técnico");
 		}
 
 		if (caixa.getValorAbertura() > 0) {
 			try {
 
-				String observacao = caixa.getTipo().equals(CaixaTipo.CAIXA) ? "Abertura de caixa"
-						: caixa.getTipo().equals(CaixaTipo.COFRE) ? "Abertura de cofre" : "Abertura de banco";
+				 String observacao = "Abertura de " + getTipoFormatado(caixa);
 
 				CaixaLancamento lancamento = new CaixaLancamento(observacao, caixa.getValorAbertura(),
 						TipoLancamento.SALDOINICIAL, EstiloLancamento.ENTRADA, caixa, usuario);
@@ -107,6 +108,14 @@ public class CaixaService {
 		return caixa.getCodigo();
 	}
 
+    private String getTipoFormatado(Caixa caixa) {
+        if (caixa.getTipo().equals(CaixaTipo.CAIXA)) {
+            return "Caixa";
+        }
+        return caixa.getTipo().equals(CaixaTipo.COFRE) ? "Cofre" : "Banco";
+    }
+
+	
 	public String fechaCaixa(Long caixa, String senha) {
 
 		Aplicacao aplicacao = Aplicacao.getInstancia();
@@ -125,8 +134,7 @@ public class CaixaService {
 			if (caixaAtual.map(Caixa::getDataFechamento).isPresent())
 				throw new RuntimeException("Caixa já esta fechado");
 
-			Double valorTotal = !caixaAtual.map(Caixa::getValorTotal).isPresent() ? 0.0
-					: caixaAtual.map(Caixa::getValorTotal).get();
+			Double valorTotal = !caixaAtual.map(Caixa::getValorTotal).isPresent() ? 0.0	: caixaAtual.map(Caixa::getValorTotal).get();
 
 			Timestamp dataHoraAtual = new Timestamp(System.currentTimeMillis());
 			caixaAtual.get().setDataFechamento(dataHoraAtual);
@@ -153,17 +161,14 @@ public class CaixaService {
 		return caixas.findByCodigoOrdenado();
 	}
 
-	public List<Caixa> listarCaixas(CaixaFilter filter) {
-		if (filter.getData_cadastro() != null) {
-			if (!filter.getData_cadastro().equals("")) {
-				filter.setData_cadastro(filter.getData_cadastro().replace("/", "-"));
-				return caixas.buscaCaixasPorDataAbertura(Date.valueOf(filter.getData_cadastro()));
-			}
-		}
-		
-		return caixas.listaCaixasAbertos();
-	}
+    public List<Caixa> listarCaixas(CaixaFilter filter) {
+        if (filter.getDataCadastro() != null && !filter.getDataCadastro().equals("")) {
+            filter.setDataCadastro(filter.getDataCadastro().replace("/", "-"));
+            return caixas.buscaCaixasPorDataAbertura(Date.valueOf(filter.getDataCadastro()));
+        }
 
+        return caixas.listaCaixas();
+    }
 	public Optional<Caixa> caixaAberto() {
 		return caixas.caixaAberto();
 	}
@@ -179,8 +184,7 @@ public class CaixaService {
 	// pega o caixa aberto do usuário informado
 	public Optional<Caixa> buscaCaixaUsuario(String usuario) {
 		Usuario usu = usuarios.buscaUsuario(usuario);
-		Optional<Caixa> caixaOptional = Optional.ofNullable(caixas.findByCaixaAbertoUsuario(usu.getCodigo()));
-		return caixaOptional;
+		return Optional.ofNullable(caixas.findByCaixaAbertoUsuario(usu.getCodigo()));
 	}
 
 	public List<Caixa> listaBancos() {

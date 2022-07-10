@@ -30,6 +30,9 @@ import net.originmobi.pdv.model.Usuario;
 import net.originmobi.pdv.service.CaixaLancamentoService;
 import net.originmobi.pdv.service.CaixaService;
 import net.originmobi.pdv.service.UsuarioService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.originmobi.pdv.singleton.Aplicacao;
 
 @Controller
@@ -52,6 +55,8 @@ public class CaixaController {
 
 	@Autowired
 	private UsuarioService usuarios;
+	
+	Logger logger = LoggerFactory.getLogger(CaixaController.class);
 
 	@GetMapping("/form")
 	public ModelAndView form() {
@@ -128,7 +133,7 @@ public class CaixaController {
 
 			retorno = lancamentos.lancamento(lancamento);
 		} catch (Exception e) {
-			e.getStackTrace();
+			logger.error(e.getMessage());
 		}
 
 		return retorno;
@@ -138,7 +143,7 @@ public class CaixaController {
 	public @ResponseBody String fazSangria(@RequestParam Map<String, String> request) {
 		Double valor = Double.valueOf(request.get("valor").replace(",", "."));
 		String observacao = request.get("obs");
-		Long codCaixa = Long.decode(request.get("caixa"));
+		Long codCaixa = Long.decode(request.get(CAIXA));
 
 		String retorno = "";
 
@@ -151,7 +156,7 @@ public class CaixaController {
 					EstiloLancamento.SAIDA, caixa.get(), usuario);
 			retorno = lancamentos.lancamento(lancamento);
 		} catch (Exception e) {
-			e.getStackTrace();
+			logger.error(e.getMessage());
 		}
 
 		return retorno;
@@ -159,14 +164,14 @@ public class CaixaController {
 
 	@PostMapping("/fechar")
 	public @ResponseBody String fecha(@RequestParam Map<String, String> request) {
-		Long caixa = Long.decode(request.get("caixa"));
+		Long caixa = Long.decode(request.get(CAIXA));
 		String senha = request.get("senha");
 		
 		String mensagem = "";
 		try {
 			mensagem = caixas.fechaCaixa(caixa, senha);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		
 		return mensagem;
