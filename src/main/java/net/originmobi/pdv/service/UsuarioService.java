@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,9 +42,9 @@ public class UsuarioService {
 			Usuario pessoaUsuario = usuarios.findByPessoaCodigoEquals(usuario.getPessoa().getCodigo());
 
 			if (usuarioExiste != null) {
-				return mensagem = "Usuário já existe";
+				return "Usuário já existe";
 			} else if (pessoaUsuario != null) {
-				return mensagem = "Pessoa já vinculada a outro usuário";
+				return "Pessoa já vinculada a outro usuário";
 			} else {
 				usuarios.save(usuario);
 				mensagem = "Usuário salvo com sucesso";
@@ -89,11 +90,11 @@ public class UsuarioService {
 
 		List<GrupoUsuario> todosGrupos = grupos.buscaGrupos(usuario);
 
-		for (int i = 0; i < todosGrupos.size(); i++) {
-			if (todosGrupos.get(i).getCodigo() == gruposUsu.getCodigo()) {
-				todosGrupos.remove(i);
-			}
-		}
+        List<GrupoUsuario> gruposParaRemover = todosGrupos.stream()
+                .filter(grupo -> grupo.getCodigo().equals(gruposUsu.getCodigo()))
+                .collect(Collectors.toList());
+
+        todosGrupos.removeAll(gruposParaRemover);
 
 		try {
 			usuario.setGrupoUsuario(todosGrupos);
